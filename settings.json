@@ -1,0 +1,8 @@
+{
+  "esp32_host": "192.168.1.101",
+  "stream_port": 81,
+  "tcp_port": 8888,
+  "model_path": "models/best.pt",
+  "conf_thres": 0.5,
+  "retain_days": 30
+}
