@@ -15,22 +15,24 @@ STREAM_URL   = f"http://{ESP32_HOST}:{STREAM_PORT}/stream"
 TCP_HOST     = ESP32_HOST
 
 # ── 模型配置 ──────────────────────────────────────────────────
-MODEL_PATH   = "models/best.pt"
+MODEL_PATH   = "models/best.pt"   # YOLOv8x 训练权重
 CONF_THRES   = 0.50
 IOU_THRES    = 0.45
 DEVICE       = "cpu"
 
 # ── 性能配置 ──────────────────────────────────────────────────
-SKIP_FRAMES      = 4
+# YOLOv8x 参数量是 s 的 ~7 倍，CPU 单帧推理约 600~1200ms
+# SKIP_FRAMES=6 表示每 6 帧推理一次，避免队列积压卡顿
+SKIP_FRAMES      = 6             # ← 原为 4，x 模型改为 6
 QUEUE_SIZE       = 2
-CAPTURE_INTERVAL = 10        # 同一虫种截图冷却秒数（新增 v3.0）
+CAPTURE_INTERVAL = 10            # 同一虫种截图冷却秒数
 
 # ── 存储配置 ──────────────────────────────────────────────────
 DB_PATH       = "db/pest_monitor.db"
 CAPTURE_DIR   = "captures"
 LOG_PATH      = "logs/app.log"
 RETAIN_DAYS   = 30
-SETTINGS_FILE = "settings.json"   # 运行时用户配置文件（新增 v3.0）
+SETTINGS_FILE = "settings.json"
 
 # ── 界面配置 ──────────────────────────────────────────────────
 WIN_TITLE    = "农作物害虫识别系统"
@@ -40,14 +42,9 @@ VIDEO_W      = 640
 VIDEO_H      = 480
 
 
-# ── 配置持久化工具函数（新增 v3.0）────────────────────────────
+# ── 配置持久化工具函数 ────────────────────────────────────────
 
 def load_settings() -> dict:
-    """
-    读取 settings.json，若不存在则从 config.py 默认值生成。
-    文件损坏时自动重置为默认值。
-    返回包含所有运行时参数的字典。
-    """
     defaults = {
         "esp32_host":  ESP32_HOST,
         "stream_port": STREAM_PORT,
@@ -55,6 +52,7 @@ def load_settings() -> dict:
         "model_path":  MODEL_PATH,
         "conf_thres":  CONF_THRES,
         "retain_days": RETAIN_DAYS,
+        "skip_frames": SKIP_FRAMES,
     }
     if not os.path.exists(SETTINGS_FILE):
         save_settings(defaults)
@@ -63,17 +61,14 @@ def load_settings() -> dict:
         with open(SETTINGS_FILE, "r", encoding="utf-8") as f:
             stored = json.load(f)
     except (json.JSONDecodeError, OSError):
-        # 文件损坏时重置为默认值
         save_settings(defaults)
         return defaults
-    # 补全缺失键（程序版本升级后新增的键）
     for k, v in defaults.items():
         stored.setdefault(k, v)
     return stored
 
 
 def save_settings(data: dict):
-    """将运行时参数写入 settings.json，失败时只记录日志不抛异常"""
     try:
         with open(SETTINGS_FILE, "w", encoding="utf-8") as f:
             json.dump(data, f, indent=2, ensure_ascii=False)
