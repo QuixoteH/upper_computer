@@ -443,7 +443,7 @@ class MainWindow(QMainWindow):
         QMessageBox.about(
             self, "关于",
             f"<b>{config.WIN_TITLE}</b><br>"
-            "基于 YOLOv8s 的农作物害虫识别上位机<br><br>"
+            "农作物害虫识别上位机<br><br>"
             "物理2201 · 黄海 · A13220499<br>"
             "Python 3.10 + PyQt5 + Ultralytics"
         )
