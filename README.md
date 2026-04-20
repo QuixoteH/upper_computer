@@ -37,4 +37,5 @@
 | AI 代码辅助 | Claude Sonnet 4.6 Thinking |
 
 ## 更新日志
+2026/4/21 识别软硬件联合调试完成(模型训练日志和结果:通过网盘分享的文件：train_and_test_result.zip链接: https://pan.baidu.com/s/1gZMOl6Xdo34eDmmx-f9XbA?pwd=6666 提取码: 6666)
 2026/4/20 修复了UI界面无法正常显示视频流的问题(原因是cv2.VideoCapture拉流没法直接解析ESP32传输的格式,改为由urllib.request.urlopen读流)
