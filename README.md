@@ -35,3 +35,6 @@
 | 视频 | OpenCV |
 | 存储 | SQLite3 |
 | AI 代码辅助 | Claude Sonnet 4.6 Thinking |
+
+## 更新日志
+2026/4/20 修复了UI界面无法正常显示视频流的问题(原因是cv2.VideoCapture拉流没法直接解析ESP32传输的格式,改为由urllib.request.urlopen读流)
